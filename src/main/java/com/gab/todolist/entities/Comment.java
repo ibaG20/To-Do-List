@@ -2,6 +2,8 @@ package com.gab.todolist.entities;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -21,6 +23,7 @@ public class Comment implements Serializable{
 	private Long id;
 	private String description;
 	
+	@JsonIgnore
 	@ManyToOne
 	@JoinColumn(name = "task_id")
 	private Task task;
