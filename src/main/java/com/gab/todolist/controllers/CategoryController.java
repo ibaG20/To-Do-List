@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.gab.todolist.dtos.CategoryRecordDto;
 import com.gab.todolist.entities.Category;
+import com.gab.todolist.entities.Task;
 import com.gab.todolist.repositories.CategoryRepository;
 
 import jakarta.validation.Valid;
@@ -34,6 +35,16 @@ public class CategoryController{
 		List<Category> categoryList = repository.findAll();
 		return ResponseEntity.status(HttpStatus.OK).body(categoryList);
 	}
+	
+	@GetMapping("/{id}")
+	public ResponseEntity<Object> getCategoryById(@PathVariable(value = "id") Long id){
+		Optional<Category> categoryO = repository.findById(id);
+		if (categoryO.isEmpty()) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Category not found");
+		}
+		return ResponseEntity.status(HttpStatus.OK).body(categoryO);
+	}
+
 	
 	@PostMapping
 	public ResponseEntity<Category> saveCategory(@RequestBody @Valid CategoryRecordDto categoryRecordDto) {

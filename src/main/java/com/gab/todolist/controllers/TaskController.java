@@ -1,6 +1,7 @@
 package com.gab.todolist.controllers;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
@@ -9,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -37,6 +39,15 @@ public class TaskController {
 	public ResponseEntity<List<Task>> getAllTasks() {
 		List<Task> taskList = repository.findAll();
 		return ResponseEntity.status(HttpStatus.OK).body(taskList);
+	}
+	
+	@GetMapping("/{id}")
+	public ResponseEntity<Object> getTaskById(@PathVariable(value = "id") Long id){
+		Optional<Task> taskO = repository.findById(id);
+		if (taskO.isEmpty()) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Task not found");
+		}
+		return ResponseEntity.status(HttpStatus.OK).body(taskO);
 	}
 
 	@PostMapping
@@ -91,6 +102,44 @@ public class TaskController {
 
 	    return ResponseEntity.status(HttpStatus.OK).body(repository.save(task));
 	}
+	
+	@PatchMapping("/{id}")
+	public ResponseEntity<Object> updateTask(@PathVariable(value = "id") Long id, @RequestBody Map<String, Object> updates) {
+	    Optional<Task> taskO = repository.findById(id);
+	    if (taskO.isEmpty()) {
+	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Task not found");
+	    }
+
+	    Task task = taskO.get();
+
+	    Optional<Category> category = categoryRepository.findById(task.getCategory().getId());
+	    if (category.isEmpty()) {
+	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Category not found");
+	    }
+
+	    task.setCategory(category.get());
+
+	    for (Map.Entry<String, Object> entry : updates.entrySet()) {
+	        String field = entry.getKey();
+	        Object value = entry.getValue();
+
+	        switch (field) {
+	            case "completed":
+	                if (value instanceof Boolean) {
+	                    task.setCompleted((Boolean) value);
+	                } else {
+	                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid value for 'completed' field");
+	                }
+	                break;
+	            // Add more cases for other fields if needed
+	            default:
+	                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid field: " + field);
+	        }
+	    }
+
+	    return ResponseEntity.status(HttpStatus.OK).body(repository.save(task));
+	}
+
 
 
 	@DeleteMapping("/{id}")

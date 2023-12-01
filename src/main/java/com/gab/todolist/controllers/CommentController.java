@@ -39,6 +39,16 @@ public class CommentController {
 		return ResponseEntity.status(HttpStatus.OK).body(commentList);
 	}
 	
+	@GetMapping("/{id}")
+	public ResponseEntity<Object> getCommentById(@PathVariable(value = "id") Long id){
+		Optional<Comment> commentO = repository.findById(id);
+		if (commentO.isEmpty()) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Comment not found");
+		}
+		return ResponseEntity.status(HttpStatus.OK).body(commentO);
+	}
+
+	
 	@PostMapping
 	public ResponseEntity<Object> saveComment(@RequestBody @Valid CommentRecordDto commentRecordDto){
 		var comment = new Comment();
