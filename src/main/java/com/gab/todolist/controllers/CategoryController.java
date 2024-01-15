@@ -26,7 +26,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping(value = "/category")
-//@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "*")
 public class CategoryController{
 	
 	@Autowired

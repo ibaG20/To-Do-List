@@ -27,7 +27,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping(value = "/comments")
-//@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "*")
 public class CommentController {
 	
 	@Autowired
